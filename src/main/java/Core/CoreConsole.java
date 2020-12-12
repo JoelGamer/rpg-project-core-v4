@@ -1,6 +1,8 @@
 package Core;
 
-import Exceptions.InvalidStatus;
+import Enums.StatusLevel;
+import com.jagrosh.jdautilities.command.Command;
+import net.dv8tion.jda.core.entities.User;
 
 public class CoreConsole {
 
@@ -10,40 +12,35 @@ public class CoreConsole {
         this.core = core;
     }
 
-    public void consoleLog(String message, int status) {
-        try {
-            if(status > 5 || status < 1) throw new InvalidStatus(1, 5);
+    public void consoleLog(String message, StatusLevel status) {
+        String output = status.toString();
+        message = " " + message;
 
-            String output = core.getConsoleTags().get(status - 1);
-            message = " " + message;
+        if(status.equals(StatusLevel.INFO)) output += message;
+        else output = involveWithConsoleColor(output + message, status);
 
-            if(status == 1) output += message;
-            else output = involveWithConsoleColor(output + message, status);
-
-            System.out.println(output);
-        } catch (InvalidStatus e) {
-            consoleLogSystem(e.getMessage(), 3);
-        }
+        System.out.println(output);
     }
 
-    public void consoleLogSystem(String message, int status) {
-        try {
-            if(status > 5 || status < 1) throw new InvalidStatus(1, 5);
+    public void consoleLogSystem(String message, StatusLevel status) {
+        String output = StatusLevel.SYSTEM.toString() + status.toString();
+        message = " " + message;
 
-            String output = core.getConsoleTags().get(5) + core.getConsoleTags().get(status - 1);
-            message = " " + message;
+        if(status.equals(StatusLevel.INFO)) output += message;
+        else output = involveWithConsoleColor(output + message, status);
 
-            if(status == 1) output += message;
-            else output = involveWithConsoleColor(output + message, status);
-
-            System.out.println(output);
-        } catch (InvalidStatus e) {
-            consoleLogSystem(e.getMessage(), 3);
-        }
+        System.out.println(output);
     }
 
-    private String involveWithConsoleColor(String message, int status) {
-        return (status > 2) ? core.getConsoleTextColors().get(1) + message + core.getConsoleTextColors().get(2) :
+    public void consoleCommandLog(User user, Command command) {
+        String output = StatusLevel.INFO.toString();
+        output += " DiscordID:" + user.getId() + " used the command " + command.getClass().getName();
+
+        System.out.println(output);
+    }
+
+    private String involveWithConsoleColor(String message, StatusLevel status) {
+        return (!status.equals(StatusLevel.WARNING)) ? core.getConsoleTextColors().get(1) + message + core.getConsoleTextColors().get(2) :
                 core.getConsoleTextColors().get(0) + message + core.getConsoleTextColors().get(2);
     }
 }

@@ -6,6 +6,7 @@ import Components.Profile.Profile;
 import Controllers.ControllerGuild;
 import Core.CoreDatabase;
 import Exceptions.InvalidValue;
+import Exceptions.Unauthorized;
 
 import java.sql.SQLException;
 import java.util.Calendar;
@@ -27,7 +28,7 @@ public class Guild extends Component {
         buildEmptyGuild();
     }
 
-    public Guild retrieveGuildData(CoreDatabase coreDatabase) throws InvalidValue, SQLException {
+    public Guild retrieveGuildData(CoreDatabase coreDatabase) throws InvalidValue, SQLException, Unauthorized {
         new ControllerGuild(coreDatabase).getGuild(this);
         return this;
     }

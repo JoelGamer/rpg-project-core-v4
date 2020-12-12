@@ -1,6 +1,5 @@
 package Controllers;
 
-import Components.Location.Location;
 import Components.Location.LocationType;
 import Core.CoreDatabase;
 import Exceptions.InvalidValue;
@@ -18,9 +17,9 @@ public class ControllerLocationType {
     }
 
     public void getLocationType(LocationType locationType) throws InvalidValue, SQLException {
-        String query = "SELECT uid_location_type, name_location_type, table_location_type " +
+        String query = "SELECT uid, name, referenced_table " +
                 "FROM location_type " +
-                "WHERE uid_location_type=" + locationType.getUid();
+                "WHERE uid=" + locationType.getUid();
 
         Statement statement = coreDatabase.getConnection().createStatement();
         ResultSet resultSet = statement.executeQuery(query);

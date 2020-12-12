@@ -6,6 +6,7 @@ import Components.Location.Location;
 import Components.Profile.Profile;
 import Core.CoreDatabase;
 import Exceptions.InvalidValue;
+import Exceptions.Unauthorized;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -20,10 +21,10 @@ public class ControllerGuild {
         this.coreDatabase = coreDatabase;
     }
 
-    public void getGuild(Guild guild) throws InvalidValue, SQLException {
-        String query = "SELECT uid_guild, name_guild, uid_owner_guild, uid_location, money_guild, uid_rank_guild, cdate_guild " +
+    public void getGuild(Guild guild) throws InvalidValue, SQLException, Unauthorized {
+        String query = "SELECT uid, name, owner, location, money, rank, creation_date " +
                 "FROM guild " +
-                "WHERE uid_guild=" + guild.getUid();
+                "WHERE uid=" + guild.getUid();
 
         Statement statement = coreDatabase.getConnection().createStatement();
         ResultSet resultSet = statement.executeQuery(query);

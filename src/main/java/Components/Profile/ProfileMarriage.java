@@ -5,8 +5,12 @@ import Components.Location.Location;
 import Controllers.ControllerProfileMarriage;
 import Core.CoreDatabase;
 import Exceptions.InvalidValue;
+import Exceptions.Unauthorized;
+import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.entities.MessageEmbed;
 
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class ProfileMarriage extends Component {
@@ -24,10 +28,14 @@ public class ProfileMarriage extends Component {
         buildEmptyMarriage();
     }
 
-    public ProfileMarriage retrieveProfileMarriage(CoreDatabase coreDatabase) throws InvalidValue, SQLException {
+    public ProfileMarriage retrieveProfileMarriage(CoreDatabase coreDatabase) throws InvalidValue, SQLException, Unauthorized {
         new ControllerProfileMarriage(coreDatabase).getProfileMarriage(this);
         return this;
     }
+
+//    public MessageEmbed buildMarriageEmbed(SimpleDateFormat dateFormat) {
+//        EmbedBuilder embedBuilder = new EmbedBuilder();
+//    }
 
     private void buildEmptyMarriage() {
         this.firstUserMarriage = null;

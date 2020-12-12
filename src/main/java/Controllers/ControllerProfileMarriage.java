@@ -5,6 +5,7 @@ import Components.Profile.Profile;
 import Components.Profile.ProfileMarriage;
 import Core.CoreDatabase;
 import Exceptions.InvalidValue;
+import Exceptions.Unauthorized;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,10 +20,10 @@ public class ControllerProfileMarriage {
         this.coreDatabase = coreDatabase;
     }
 
-    public void getProfileMarriage(ProfileMarriage profileMarriage) throws InvalidValue, SQLException {
-        String query = "SELECT uid_marriage, uid_first_user_marriage, uid_second_user_marriage, uid_location_marriage, date_marriage " +
-                "FROM marriage " +
-                "WHERE uid_marriage=" + profileMarriage.getUid();
+    public void getProfileMarriage(ProfileMarriage profileMarriage) throws InvalidValue, SQLException, Unauthorized {
+        String query = "SELECT uid, first_user, second_user, location, marriage_date " +
+                "FROM user_marriage " +
+                "WHERE uid=" + profileMarriage.getUid();
 
         Statement statement = coreDatabase.getConnection().createStatement();
         ResultSet resultSet = statement.executeQuery(query);

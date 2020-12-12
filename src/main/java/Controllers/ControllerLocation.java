@@ -4,7 +4,9 @@ import Components.Component;
 import Components.Location.Location;
 import Components.Location.LocationType;
 import Core.CoreDatabase;
+import Enums.LocationTypes;
 import Exceptions.InvalidValue;
+import Exceptions.NonExistentLocation;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,9 +21,9 @@ public class ControllerLocation {
     }
 
     public void getLocation(Location location) throws InvalidValue, SQLException {
-        String query = "SELECT uid_location, name_location, type_location, uid_linked_location " +
+        String query = "SELECT uid, name, type, linked_location " +
                 "FROM location " +
-                "WHERE uid_location=" + location.getUid();
+                "WHERE uid=" + location.getUid();
 
         Statement statement = coreDatabase.getConnection().createStatement();
         ResultSet resultSet = statement.executeQuery(query);
@@ -33,6 +35,40 @@ public class ControllerLocation {
             location.setLinkedLocation(new Component(resultSet.getLong(4)));
         }
 
+        statement.close();
+    }
+
+    public Location getLocationByLinkedLocation(LocationTypes locationType, int uid) throws InvalidValue, NonExistentLocation, SQLException {
+        Location location = null;
+        String query = "SELECT uid, name, type, linked_location " +
+                "FROM location " +
+                "WHERE type=" + locationType.getType() + " AND linked_location=" + uid;
+
+        Statement statement = coreDatabase.getConnection().createStatement();
+        ResultSet resultSet = statement.executeQuery(query);
+
+        while (resultSet.next()) {
+            location = new Location(resultSet.getLong(1));
+            location.setName(resultSet.getString(2));
+            location.setLocationType(new LocationType(resultSet.getLong(3)).retrieveLocationTypeData(coreDatabase));
+            location.setLinkedLocation(new Component(resultSet.getLong(4)));
+        }
+
+        statement.close();
+
+        if (location == null) throw new NonExistentLocation();
+
+        return location;
+    }
+
+    public void createLocation(Location location) throws SQLException {
+        String query = "INSERT INTO location(name, type, linked_location) VALUES('" +
+                location.getName() + "', " +
+                location.getLocationType().getUid() + ", " +
+                location.getLinkedLocation().getUid();
+
+        Statement statement = coreDatabase.getConnection().createStatement();
+        statement.execute(query);
         statement.close();
     }
 }

@@ -26,7 +26,6 @@ public class CoreVariables {
     private String databasePassword;
 
     // Console Log Data
-    private final ArrayList<String> consoleTags = new ArrayList<>();
     private final ArrayList<String> consoleTextColors = new ArrayList<>();
     private final ArrayList<String> dateFormats = new ArrayList<>();
 
@@ -54,7 +53,6 @@ public class CoreVariables {
         setDatabaseName(properties);
         setDatabaseUsername(properties);
         setDatabasePassword(properties);
-        setConsoleTags(properties);
         setConsoleTextColors(properties);
         setDateFormats(properties);
     }
@@ -87,10 +85,6 @@ public class CoreVariables {
 
     public String getDatabasePassword() {
         return databasePassword;
-    }
-
-    public ArrayList<String> getConsoleTags() {
-        return consoleTags;
     }
 
     public ArrayList<String> getConsoleTextColors() {
@@ -143,15 +137,6 @@ public class CoreVariables {
 
     private void setDatabasePassword(Properties properties) {
         this.databasePassword = properties.getProperty("databasePassword");
-    }
-
-    private void setConsoleTags(Properties properties) {
-        this.consoleTags.add(properties.getProperty("consoleInfo"));
-        this.consoleTags.add(properties.getProperty("consoleWarning"));
-        this.consoleTags.add(properties.getProperty("consoleError"));
-        this.consoleTags.add(properties.getProperty("consoleCriticalError"));
-        this.consoleTags.add(properties.getProperty("consoleFailure"));
-        this.consoleTags.add(properties.getProperty("consoleSystem"));
     }
 
     private void setConsoleTextColors(Properties properties) {

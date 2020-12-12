@@ -17,9 +17,9 @@ public class ControllerGuildRank {
     }
 
     public void getGuildRank(GuildRank guildRank) throws InvalidValue, SQLException {
-        String query = "SELECT uid_rank, name_rank, total_power_min_rank, user_level_min_rank " +
+        String query = "SELECT uid, name, total_minimum_power, user_minimum_level " +
                 "FROM guild_rank " +
-                "WHERE uid_rank=" + guildRank.getUid();
+                "WHERE uid=" + guildRank.getUid();
 
         Statement statement = coreDatabase.getConnection().createStatement();
         ResultSet resultSet = statement.executeQuery(query);

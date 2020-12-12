@@ -7,7 +7,7 @@ import Components.Profile.ProfileClass;
 import Components.Profile.ProfileMarriage;
 import Components.Profile.ProfileRank;
 import Core.CoreDatabase;
-import Exceptions.AccessDenied;
+import Exceptions.Unauthorized;
 import Exceptions.InvalidValue;
 
 import java.sql.ResultSet;
@@ -23,9 +23,9 @@ public class ControllerProfile {
         this.coreDatabase = coreDatabase;
     }
 
-    public void getProfile(Profile profile) throws AccessDenied, InvalidValue, SQLException {
-        String searchMethod = (profile.getUid() > 0) ? "uid_user=" + profile.getUid() : "id_user='" + profile.getDiscordID() + "'";
-        String query = "SELECT uid_user,id_user,level_user,experience_user,uid_class,uid_rank,power_user,money_user,uid_marriage,uid_guild,uid_location,cdate_user,clocation_user " +
+    public void getProfile(Profile profile) throws InvalidValue, SQLException, Unauthorized {
+        String searchMethod = (profile.getUid() > 0) ? "uid=" + profile.getUid() : "id='" + profile.getDiscordID() + "'";
+        String query = "SELECT uid, id, level, experience, class, rank, power, money, marriage, guild, location, creation_date, creation_location " +
                 "FROM user " +
                 "WHERE " + searchMethod;
 
@@ -41,8 +41,8 @@ public class ControllerProfile {
             profile.setProfileRank(new ProfileRank(resultSet.getLong(6)).retrieveProfileRankData(coreDatabase));
             profile.setPower(resultSet.getLong(7));
             profile.setMoney(resultSet.getLong(8));
-            profile.setProfileMarriage(createProfileMarriage(resultSet.getLong(9)));
-            profile.setGuild(createGuild(resultSet.getLong(10)));
+            profile.setProfileMarriage(createProfileMarriageObject(resultSet.getLong(9)));
+            profile.setGuild(createGuildObject(resultSet.getLong(10)));
             profile.setLocation(new Location(resultSet.getLong(11)).retrieveLocationData(coreDatabase));
 
             Calendar calendar = new Calendar.Builder().build();
@@ -52,15 +52,16 @@ public class ControllerProfile {
             profile.setProfileCreationLocation(new Location(resultSet.getInt(13)).retrieveLocationData(coreDatabase));
         }
 
-        if(profile.getUid() < 1) throw new AccessDenied(profile.getDiscordID());
-
         statement.close();
+
+        if(profile.getUid() < 1) throw new Unauthorized(profile.getDiscordID());
     }
 
-    public void getSimplerProfile(Profile profile) throws InvalidValue, SQLException {
-        String query = "SELECT uid_user, id_user " +
+    public void getSimplerProfile(Profile profile) throws InvalidValue, SQLException, Unauthorized {
+        String searchMethod = (profile.getUid() > 0) ? "uid=" + profile.getUid() : "id='" + profile.getDiscordID() + "'";
+        String query = "SELECT uid, id " +
                 "FROM user " +
-                "WHERE uid_user=" + profile.getUid();
+                "WHERE " + searchMethod;
 
         Statement statement = coreDatabase.getConnection().createStatement();
         ResultSet resultSet = statement.executeQuery(query);
@@ -71,14 +72,37 @@ public class ControllerProfile {
         }
 
         statement.close();
+
+        if(profile.getUid() < 1) throw new Unauthorized(profile.getDiscordID());
     }
 
-    private ProfileMarriage createProfileMarriage(long uid) throws AccessDenied, InvalidValue, SQLException {
+    public void createProfile(Profile profile) throws SQLException {
+        String query = "INSERT INTO user(id, level, experience, class, rank, power, money, marriage, guild, location, creation_date, creation_location) " +
+                "VALUES('" +
+                profile.getDiscordID() + "', " +
+                profile.getLevel() + ", " +
+                profile.getExperience() + ", " +
+                profile.getProfileClass().getUid() + ", " +
+                profile.getProfileRank().getUid() + ", " +
+                profile.getPower() + ", " +
+                profile.getMoney() + ", " +
+                profile.getProfileMarriage() + ", " +
+                profile.getGuild() + ", " +
+                profile.getLocation().getUid() + ", '" +
+                coreDatabase.convertCalendarToSQLString(profile.getProfileCreationDate()) + "', " +
+                profile.getProfileCreationLocation().getUid() + ")";
+
+        Statement statement = coreDatabase.getConnection().createStatement();
+        statement.execute(query);
+        statement.close();
+    }
+
+    private ProfileMarriage createProfileMarriageObject(long uid) throws InvalidValue, SQLException, Unauthorized {
         if(uid > 0) return new ProfileMarriage(uid).retrieveProfileMarriage(coreDatabase);
         return new ProfileMarriage();
     }
 
-    private Guild createGuild(long uid) throws AccessDenied, InvalidValue, SQLException {
+    private Guild createGuildObject(long uid) throws InvalidValue, SQLException, Unauthorized {
         if(uid > 0) return new Guild(uid).retrieveGuildData(coreDatabase);
         return new Guild();
     }

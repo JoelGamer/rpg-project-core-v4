@@ -4,7 +4,7 @@ import Exceptions.InvalidValue;
 
 /**
  * The {@code Component} class is a somewhat abstract class, shared amongst all other classes in this package.
- * It's used to define the extended class that it contains a unique identifier defined in the database of this aplication
+ * It's used to define the extended class that it contains a unique identifier defined in the database of this application
  *
  * @author Guilherme Theodoro
  * @since 0.0.1

@@ -1,5 +1,11 @@
+import Commands.City.CreateCity;
+import Commands.City.ShowCity;
+import Commands.Profile.CreateProfile;
+import Commands.Profile.Marriage.Marry;
+import Commands.Profile.Marriage.ShowMarriage;
 import Commands.Profile.ShowProfile;
 import Core.Core;
+import Enums.StatusLevel;
 import com.jagrosh.jdautilities.command.CommandClient;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
@@ -19,7 +25,7 @@ public class Main {
     }
 
     private static void buildDiscordBot(Core core) throws LoginException {
-        core.coreConsole().consoleLogSystem("Preparing to build bot...", 1);
+        core.coreConsole().consoleLogSystem("Preparing to build bot...", StatusLevel.INFO);
 
         JDA jda = new JDABuilder(AccountType.BOT).setToken(core.getToken()).build();
 
@@ -32,16 +38,22 @@ public class Main {
         builder.setHelpWord(core.getHelpWord());
         builder.setServerInvite(core.getDiscordInviteLink());
 
-        core.coreConsole().consoleLogSystem("Instantiating commands...", 1);
+        core.coreConsole().consoleLogSystem("Instantiating commands...", StatusLevel.INFO);
 
         //Profile Commands
-        builder.addCommands(new ShowProfile(core));
+        builder.addCommands(new ShowProfile(core), new CreateProfile(core, waiter));
+
+        //Profile Marriage Commands
+        builder.addCommands(new ShowMarriage(core));
+
+        //City Commands
+        builder.addCommands(new ShowCity(core), new CreateCity(core));
 
         CommandClient client = builder.build();
         jda.addEventListener(client);
         jda.addEventListener(waiter);
 
-        core.coreConsole().consoleLogSystem("Bot build successfully!", 1);
+        core.coreConsole().consoleLogSystem("Bot build successfully!", StatusLevel.INFO);
     }
 
     private static Core createCore() {

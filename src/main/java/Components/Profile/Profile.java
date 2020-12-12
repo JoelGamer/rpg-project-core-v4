@@ -5,9 +5,11 @@ import Components.Guild.Guild;
 import Components.Location.Location;
 import Controllers.ControllerProfile;
 import Core.CoreDatabase;
-import Exceptions.AccessDenied;
+import Exceptions.Unauthorized;
 import Exceptions.InvalidValue;
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.entities.User;
+
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -35,21 +37,37 @@ public class Profile extends Component {
         this.discordID = discordID;
     }
 
-    public Profile retrieveProfileData(CoreDatabase coreDatabase) throws AccessDenied, InvalidValue, SQLException {
+    public Profile retrieveProfileData(CoreDatabase coreDatabase) throws InvalidValue, SQLException, Unauthorized {
         new ControllerProfile(coreDatabase).getProfile(this);
         return this;
     }
 
-    public Profile retrieveSimplerProfileData(CoreDatabase coreDatabase) throws InvalidValue, SQLException {
+    public Profile retrieveSimplerProfileData(CoreDatabase coreDatabase) throws InvalidValue, SQLException, Unauthorized {
         new ControllerProfile(coreDatabase).getSimplerProfile(this);
         return this;
     }
 
-    public EmbedBuilder buildProfileEmbed(SimpleDateFormat simpleDateFormat) {
+    public void createProfileData(CoreDatabase coreDatabase) throws InvalidValue, SQLException {
+        createProfileTemplate();
+        new ControllerProfile(coreDatabase).createProfile(this);
+    }
+
+    private void createProfileTemplate() throws InvalidValue {
+        this.setLevel(1);
+        this.setExperience(0);
+        this.setProfileRank(new ProfileRank(1));
+        this.setPower(0);
+        this.setMoney(0);
+        this.setProfileCreationDate(Calendar.getInstance());
+    }
+
+    public EmbedBuilder buildProfileEmbed(SimpleDateFormat simpleDateFormat, User profileToShow) {
         EmbedBuilder eb = new EmbedBuilder();
+        eb.setTitle(profileToShow.getAsTag() + " Profile's");
+        eb.setThumbnail(profileToShow.getAvatarUrl());
         eb.addField("Name","<@"+ getDiscordID() +">",true);
         eb.addField("Level/XP",getLevel() +"/"+ getExperience(),true);
-        eb.addField("ProfileClass", getProfileClass().getName(), true);
+        eb.addField("Class", getProfileClass().getName(), true);
         eb.addField("Rank", getProfileRank().getName() ,true);
         eb.addField("Power", getPower() + "pp", true);
         eb.addField("Money", "G$" + getMoney(), true);

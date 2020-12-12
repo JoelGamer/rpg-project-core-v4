@@ -3,6 +3,7 @@ package Components.Location;
 import Components.Component;
 import Controllers.ControllerLocation;
 import Core.CoreDatabase;
+import Enums.LocationTypes;
 import Exceptions.InvalidValue;
 
 import java.sql.SQLException;
@@ -17,9 +18,19 @@ public class Location extends Component {
         super(uid);
     }
 
+    public Location(Component linkedLocation) {
+        this.linkedLocation = linkedLocation;
+    }
+
     public Location retrieveLocationData(CoreDatabase coreDatabase) throws InvalidValue, SQLException {
         new ControllerLocation(coreDatabase).getLocation(this);
         return this;
+    }
+
+    public void createLocationData(CoreDatabase coreDatabase, String locationName, LocationTypes locationTypes) throws SQLException, InvalidValue {
+        setName(locationName);
+        setLocationType(new LocationType(locationTypes.getType()));
+        new ControllerLocation(coreDatabase).createLocation(this);
     }
 
     public String getName() {

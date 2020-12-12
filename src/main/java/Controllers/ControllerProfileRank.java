@@ -17,9 +17,9 @@ public class ControllerProfileRank {
     }
 
     public void getProfileRank(ProfileRank profileRank) throws SQLException, InvalidValue {
-        String query = "SELECT uid_rank, name_rank, min_power_rank " +
+        String query = "SELECT uid, name, minimum_power " +
                 "FROM user_rank " +
-                "WHERE uid_rank=" + profileRank.getUid();
+                "WHERE uid=" + profileRank.getUid();
 
         Statement statement = coreDatabase.getConnection().createStatement();
         ResultSet resultSet = statement.executeQuery(query);
